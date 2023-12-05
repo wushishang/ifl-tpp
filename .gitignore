@@ -23,5 +23,10 @@ comment.cut
 
 .idea/
 .vscode/
+*.csv
+*.png
+*.zip
+/code/build/*
+/code/dist/*
 
 

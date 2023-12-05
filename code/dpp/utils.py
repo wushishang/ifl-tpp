@@ -1,9 +1,43 @@
+import os
 import torch
 import torch.nn.functional as F
 
 from typing import Any, List, Optional
 
 
+class Device:
+    device = None
+    real_gpu_device = None
+    
+    
+    @property
+    def get_cuda_id(cls):
+        if torch.cuda.is_available():
+            # Run as slurm jobs
+            cls.real_gpu_device = os.environ.get('SLURM_STEP_GPUS', os.environ.get('SLURM_JOB_GPUS'))
+            if cls.real_gpu_device is None:  # Interative run
+                cls.real_gpu_device = cls.device
+            cls.real_gpu_device = int(cls.real_gpu_device)
+        return cls.real_gpu_device
+    
+    
+    @classmethod
+    def set_device(cls, device=0): 
+        # Primaily used for interactive runs
+        # Always use the cuda:0 on slurm jobs
+        if torch.backends.mps.is_available():
+            cls.device = "mps"
+        elif torch.cuda.is_available():
+            assert isinstance(device, int)
+            cls.device = f"cuda:{device}"
+        else:
+            cls.device = "cpu"
+        
+        cls.device = torch.device(device)
+        torch.set_default_device(cls.device)
+        print(f"Using device: {cls.device}")
+    
+    
 def _size_repr(key: str, item: Any) -> str:
     """String containing the size / shape of an object (e.g. a tensor, array)."""
     if isinstance(item, torch.Tensor) and item.dim() == 0:

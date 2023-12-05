@@ -78,8 +78,8 @@ class RecurrentTPP(nn.Module):
 
         Returns:
             context: Context vector used to condition the distribution of each event,
-                shape (batch_size, seq_len, context_size) if remove_last == False
-                shape (batch_size, seq_len + 1, context_size) if remove_last == True
+                shape (batch_size, seq_len, context_size) if remove_last == True
+                shape (batch_size, seq_len + 1, context_size) if remove_last == False
 
         """
         context = self.rnn(features)[0]

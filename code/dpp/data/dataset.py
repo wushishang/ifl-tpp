@@ -68,10 +68,10 @@ class SequenceDataset(torch.utils.data.Dataset):
         return SequenceDataset(new_sequences, num_marks=new_num_marks)
 
     def get_dataloader(
-            self, batch_size: int = 32, shuffle: bool = True
+            self, device, batch_size: int = 32, shuffle: bool = True
     ) -> torch.utils.data.DataLoader:
         return torch.utils.data.DataLoader(
-            self, batch_size=batch_size, shuffle=shuffle, collate_fn=Batch.from_list
+            self, batch_size=batch_size, shuffle=shuffle, collate_fn=Batch.from_list, generator=torch.Generator(device=device)
         )
 
     def train_val_test_split(
